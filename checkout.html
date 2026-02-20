@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - chart.py</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background: linear-gradient(135deg, #306998 0%, #FFD43B 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .checkout-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 3rem;
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #306998;
+            margin-bottom: 2rem;
+        }
+
+        .plan-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #306998;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+
+        .plan-features li {
+            padding: 0.5rem 0;
+            color: #666;
+        }
+
+        .plan-features li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #306998;
+        }
+
+        #card-element {
+            padding: 0.75rem;
+            border: 2px solid #e9ecef;
+            border-radius: 0.5rem;
+            background: white;
+        }
+
+        #card-errors {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            min-height: 20px;
+        }
+
+        .submit-button {
+            width: 100%;
+            background: linear-gradient(135deg, #306998 0%, #4B8BBE 100%);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .security-note {
+            text-align: center;
+            color: #666;
+            font-size: 0.875rem;
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .guarantee {
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .back-link a {
+            color: #306998;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .processing {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="checkout-container">
+        <div class="logo">📈 chart.py</div>
+
+        <div class="plan-summary" id="plan-summary">
+            <div class="plan-name" id="plan-name">Pro Plan</div>
+            <div class="plan-price" id="plan-price">$19.99<span>/month</span></div>
+            <ul class="plan-features" id="plan-features">
+                <li>Unlimited analyses</li>
+                <li>All technical indicators</li>
+                <li>Price alerts</li>
+                <li>Portfolio tracking</li>
+                <li>Advanced charts</li>
+                <li>Priority support</li>
+            </ul>
+        </div>
+
+        <div class="guarantee">
+            💯 14-Day Money-Back Guarantee
+        </div>
+
+        <form id="payment-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required placeholder="you@example.com">
+            </div>
+
+            <div class="form-group">
+                <label for="name">Name on Card</label>
+                <input type="text" id="name" required placeholder="John Doe">
+            </div>
+
+            <div class="form-group">
+                <label for="card-element">Card Details</label>
+                <div id="card-element"></div>
+                <div id="card-errors"></div>
+            </div>
+
+            <button type="submit" class="submit-button" id="submit-button">
+                <span id="button-text">Subscribe Now</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div class="security-note">
+            🔒 Secure payment powered by Stripe
+        </div>
+
+        <div class="back-link">
+            <a href="landing.html">← Back to pricing</a>
+        </div>
+    </div>
+
+    <script>
+        // Get plan from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const plan = urlParams.get('plan') || 'pro';
+
+        // Plan configurations
+        const plans = {
+            free: {
+                name: 'Free Plan',
+                price: '$0',
+                priceId: null,
+                features: [
+                    '5 analyses per day',
+                    'Basic technical indicators',
+                    'Price charts',
+                    'Community support'
+                ]
+            },
+            pro: {
+                name: 'Pro Plan',
+                price: '$19.99',
+                priceId: 'price_1SzS0PK3nmVF6uBRY0yaKCcf', // Replace with your actual Stripe Price ID
+                features: [
+                    'Unlimited analyses',
+                    'All technical indicators',
+                    'Price alerts',
+                    'Portfolio tracking',
+                    'Advanced charts',
+                    'Priority support'
+                ]
+            },
+            premium: {
+                name: 'Premium Plan',
+                price: '$69.99',
+                priceId: 'price_1SzS04K3nmVF6uBRqCupe2z9', // Replace with your actual Stripe Price ID
+                features: [
+                    'Everything in Pro',
+                    'AI predictions',
+                    'Backtesting',
+                    'API access',
+                    'Export reports',
+                    'White-label option',
+                    'Dedicated support'
+                ]
+            }
+        };
+
+        // Update plan summary
+        const selectedPlan = plans[plan];
+        document.getElementById('plan-name').textContent = selectedPlan.name;
+        document.getElementById('plan-price').innerHTML = selectedPlan.price + '<span>/month</span>';
+        
+        const featuresList = document.getElementById('plan-features');
+        featuresList.innerHTML = '';
+        selectedPlan.features.forEach(feature => {
+            const li = document.createElement('li');
+            li.textContent = feature;
+            featuresList.appendChild(li);
+        });
+
+        // Free plan redirects to app
+        if (plan === 'free') {
+            window.location.href = 'http://localhost:8501';
+        }
+
+        // Stripe setup
+        // IMPORTANT: Replace 'pk_test_...' with your actual Stripe Publishable Key
+        const stripe = Stripe('pk_test_51LtyNEK3nmVF6uBRACrWgWPX8sep1rpvbSjW6OM0rZsSBoNQD3zEOdicdgXqtSUwV9f3viunpZR63k5c1u29guNP00GBZ7e3rF'); // Replace this!
+        const elements = stripe.elements();
+        
+        const cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    fontFamily: '"JetBrains Mono", monospace',
+                    color: '#333',
+                    '::placeholder': {
+                        color: '#aab7c4',
+                    },
+                },
+            },
+        });
+        
+        cardElement.mount('#card-element');
+
+        // Handle card errors
+        cardElement.on('change', (event) => {
+            const displayError = document.getElementById('card-errors');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+            } else {
+                displayError.textContent = '';
+            }
+        });
+
+        // Handle form submission
+        const form = document.getElementById('payment-form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const submitButton = document.getElementById('submit-button');
+            const buttonText = document.getElementById('button-text');
+            const spinner = document.getElementById('spinner');
+
+            // Disable button and show loading
+            submitButton.disabled = true;
+            buttonText.textContent = 'Processing...';
+            spinner.style.display = 'block';
+
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+
+            // Create payment method
+            const {error, paymentMethod} = await stripe.createPaymentMethod({
+                type: 'card',
+                card: cardElement,
+                billing_details: {
+                    name: name,
+                    email: email,
+                },
+            });
+
+            if (error) {
+                // Show error
+                document.getElementById('card-errors').textContent = error.message;
+                submitButton.disabled = false;
+                buttonText.textContent = 'Subscribe Now';
+                spinner.style.display = 'none';
+            } else {
+                // Send to your server to create subscription
+                console.log('Payment Method created:', paymentMethod);
+                
+
+                
+                // PRODUCTION CODE - Uncomment and configure:
+             try{   
+                const response = await fetch('http://localhost:5001/create-subscription', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        paymentMethodId: paymentMethod.id,
+                        priceId: selectedPlan.priceId,
+                        email: email,
+                    }),
+                });
+
+                const subscription = await response.json();
+
+                if (subscription.error) {
+                    document.getElementById('card-errors').textContent = subscription.error;
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Subscribe Now';
+                    spinner.style.display = 'none';
+                } else {
+                    // Redirect to success page or app
+                    alert('✅ Payment successful! Welcome to chart.py ' + selectedPlan.name);
+                   window.location.href = 'http://localhost:8501?subscription=success&plan=' + plan;
+                }
+                   } catch (error) {
+                        console.error('Network error:', error);
+                        document.getElementById('card-errors').textContent = 'Connection error. Make sure backend is running.';
+                        submitButton.disabled = false;
+                        buttonText.textContent = 'Subscribe Now';
+                        spinner.style.display = 'none';
+    }
+            }
+        });
+    </script>
+</body>
+</html>

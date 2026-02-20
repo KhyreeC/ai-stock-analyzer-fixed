@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stock Analyzer - Smart Investment Decisions</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background: linear-gradient(135deg, #306998 0%, #FFD43B 100%);
+            color: #333;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #306998;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #306998;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #306998 0%, #4B8BBE 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(48, 105, 152, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        /* Trust Badges */
+        .trust-badges {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .trust-badge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .trust-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #FFD43B;
+        }
+
+        .trust-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 0.5rem;
+        }
+
+        /* Hero Buttons */
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .primary-button {
+            background: white;
+            color: #306998;
+            padding: 1rem 2.5rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .primary-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255,255,255,0.3);
+        }
+
+        .secondary-button {
+            background: transparent;
+            color: white;
+            padding: 1rem 2.5rem;
+            border: 2px solid white;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .secondary-button:hover {
+            background: white;
+            color: #306998;
+        }
+
+        /* Live Activity Feed */
+        .live-activity {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .activity-header {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .activity-feed {
+            max-height: 150px;
+            overflow: hidden;
+        }
+
+        .activity-item {
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            animation: slideIn 0.5s ease;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Security Badges */
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .security-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        /* Features Section */
+        .features {
+            background: white;
+            padding: 6rem 2rem;
+        }
+
+        .features-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #306998;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #306998;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            padding: 6rem 2rem;
+            color: white;
+        }
+
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .stats h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stats-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #FFD43B;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-description {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+
+        .methodology {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background: white;
+            padding: 6rem 2rem;
+        }
+
+        .testimonials-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonials h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #306998;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .testimonial-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stars {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #FFD43B;
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .testimonial-author strong {
+            color: #306998;
+            font-size: 1rem;
+        }
+
+        .testimonial-author span {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            background: linear-gradient(135deg, #306998 0%, #FFD43B 100%);
+            padding: 6rem 2rem;
+            color: white;
+        }
+
+        .pricing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Countdown Timer */
+        .countdown-banner {
+            background: rgba(239, 68, 68, 0.9);
+            padding: 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: 0.75rem;
+            font-weight: 700;
+        }
+
+        .countdown-timer {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Guarantee Badge */
+        .guarantee-badge {
+            text-align: center;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .guarantee-badge h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: white;
+            color: #333;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .pricing-card.popular {
+            border: 3px solid #FFD43B;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FFD43B;
+            color: #306998;
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #306998;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #306998;
+            margin-bottom: 0.5rem;
+        }
+
+        .price span {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .price-strike {
+            text-decoration: line-through;
+            font-size: 1.5rem;
+            color: #999;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-card li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .pricing-card li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .pricing-button {
+            width: 100%;
+            background: linear-gradient(135deg, #306998 0%, #4B8BBE 100%);
+            color: white;
+            padding: 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .pricing-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(48, 105, 152, 0.95);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .trust-badges {
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">📈 AI Stock Analyzer</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            <a href="http://localhost:8501" class="cta-button">Launch App</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Make Smarter Investment Decisions</h1>
+        <p>AI-powered stock analysis with real-time data, technical indicators, and clear buy/hold/sell recommendations</p>
+        
+        <!-- Trust Badges -->
+        <div class="trust-badges">
+            <div class="trust-badge">
+                <span class="trust-number" id="user-count">12,493</span>
+                <span class="trust-label">Active Investors</span>
+            </div>
+            <div class="trust-badge">
+                <span class="trust-number">73.2%</span>
+                <span class="trust-label">Win Rate</span>
+            </div>
+            <div class="trust-badge">
+                <span class="trust-number" id="analysis-count">50,247</span>
+                <span class="trust-label">Analyses This Week</span>
+            </div>
+        </div>
+        
+        <div class="hero-buttons">
+            <a href="http://localhost:8501" class="primary-button">Start Analyzing Free →</a>
+            <a href="#pricing" class="secondary-button">View Pricing</a>
+        </div>
+        
+        <!-- Live Activity Feed -->
+        <div class="live-activity">
+            <div class="activity-header">🔴 Live Activity</div>
+            <div class="activity-feed" id="activity-feed">
+                <div class="activity-item">Sarah from Austin just analyzed NVDA</div>
+                <div class="activity-item">Mike from NYC upgraded to Pro</div>
+                <div class="activity-item">James from Seattle analyzed AAPL</div>
+            </div>
+        </div>
+
+        <!-- Security Badges -->
+        <div class="security-badges">
+            <div class="security-badge">
+                🔒 SSL Encrypted
+            </div>
+            <div class="security-badge">
+                💳 Secure Payments
+            </div>
+            <div class="security-badge">
+                🛡️ Privacy Protected
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="features-container">
+            <h2>Powerful Features for Investors</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Analysis</h3>
+                    <p>Advanced algorithms analyze price trends, technical indicators, and market sentiment to give you actionable insights.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Real-Time Data</h3>
+                    <p>Get up-to-the-minute stock prices, volume data, and market information for accurate analysis.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Technical Indicators</h3>
+                    <p>RSI, moving averages, volume trends, and more - all calculated and interpreted for you automatically.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Clear Recommendations</h3>
+                    <p>No confusion - get straightforward BUY, HOLD, or SELL signals with detailed reasoning.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📉</div>
+                    <h3>Interactive Charts</h3>
+                    <p>Beautiful candlestick charts with moving averages and volume visualization.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Get comprehensive analysis in seconds, not hours of manual research.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <h2>Proven Track Record</h2>
+            <p class="stats-subtitle">Real results from our AI-powered recommendations</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">73.2%</div>
+                    <div class="stat-label">Win Rate</div>
+                    <div class="stat-description">Of our BUY signals resulted in positive returns within 30 days</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">+18.4%</div>
+                    <div class="stat-label">Avg Return</div>
+                    <div class="stat-description">Average gain on successful BUY recommendations</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">89.1%</div>
+                    <div class="stat-label">Accuracy</div>
+                    <div class="stat-description">Of SELL signals correctly predicted downward movement</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Analyses</div>
+                    <div class="stat-description">Stocks analyzed with our AI technology</div>
+                </div>
+            </div>
+
+            <div class="methodology">
+                <p><strong>Methodology:</strong> Performance data based on backtesting from Jan 2023 - Dec 2025 across 500+ stocks. Past performance does not guarantee future results. Individual results may vary.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="testimonials-container">
+            <h2>What Our Users Say</h2>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"This tool saved me hours of research. The buy signal on NVDA at $450 was spot on - rode it all the way up. Best $15/month I've ever spent."</p>
+                    <div class="testimonial-author">
+                        <strong>Mike Chen</strong>
+                        <span>Day Trader</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"As a beginner investor, I was overwhelmed by all the data. This AI analyzer breaks it down into simple buy/hold/sell recommendations I can actually understand and act on."</p>
+                    <div class="testimonial-author">
+                        <strong>Sarah Williams</strong>
+                        <span>Retail Investor</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"The technical analysis is surprisingly accurate. I've been trading for 10 years and this tool catches patterns I would have missed. The RSI and volume analysis is particularly strong."</p>
+                    <div class="testimonial-author">
+                        <strong>James Rodriguez</strong>
+                        <span>Professional Trader</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Got a SELL signal on META right before it dropped 8%. Saved me thousands. The candlestick charts make it easy to visualize what's happening."</p>
+                    <div class="testimonial-author">
+                        <strong>Emily Thompson</strong>
+                        <span>Long-term Investor</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"I use this every morning before market open. Quick, accurate, and the Python-themed interface is a nice touch. Great for my tech portfolio analysis."</p>
+                    <div class="testimonial-author">
+                        <strong>David Park</strong>
+                        <span>Tech Investor</span>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Finally, a stock analyzer that doesn't require a finance degree to understand. Clear signals, solid reasoning, and it's been right more often than not."</p>
+                    <div class="testimonial-author">
+                        <strong>Lisa Martinez</strong>
+                        <span>New Investor</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="pricing-container">
+            <h2>Choose Your Plan</h2>
+            
+            <!-- Countdown Timer -->
+            <div class="countdown-banner">
+                ⏰ LIMITED TIME: 50% OFF PRO PLAN - OFFER ENDS IN <span class="countdown-timer" id="countdown">23:45:32</span>
+            </div>
+
+            <!-- Money-Back Guarantee -->
+            <div class="guarantee-badge">
+                <h3>💯 14-Day Money-Back Guarantee</h3>
+                <p>Try risk-free. If you're not satisfied, we'll refund 100% of your money. No questions asked.</p>
+            </div>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">$0<span>/month</span></div>
+                    <ul>
+                        <li>5 analyses per day</li>
+                        <li>Basic technical indicators</li>
+                        <li>Price charts</li>
+                        <li>Community support</li>
+                    </ul>
+                    <a href="http://localhost:8501" class="pricing-button">Get Started Free</a>
+                </div>
+
+                <div class="pricing-card popular">
+                    <div class="popular-badge">MOST POPULAR</div>
+                    <h3>Pro</h3>
+                    <div class="price-strike">$39.99</div>
+                    <div class="price">$19.99<span>/month</span></div>
+                    <p style="color: #ef4444; font-weight: 700; margin-bottom: 1rem;">⚡ 50% OFF - Limited Time!</p>
+                    <ul>
+                        <li>Unlimited analyses</li>
+                        <li>All technical indicators</li>
+                        <li>Price alerts</li>
+                        <li>Portfolio tracking</li>
+                        <li>Advanced charts</li>
+                        <li>Priority support</li>
+                        <li>Cancel anytime</li>
+                    </ul>
+                    <a href="./checkout.html?plan=pro" class="pricing-button">Start Free Trial</a>
+                </div>
+
+                <div class="pricing-card">
+                    <h3>Premium</h3>
+                    <div class="price">$69.99<span>/month</span></div>
+                    <ul>
+                        <li>Everything in Pro</li>
+                        <li>AI predictions</li>
+                        <li>Backtesting</li>
+                        <li>API access</li>
+                        <li>Export reports</li>
+                        <li>White-label option</li>
+                        <li>Dedicated support</li>
+                    </ul>
+                    <a href="./checkout.html?plan=premium" class="pricing-button">Get Premium</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="about">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">About</a>
+                <a href="#">Blog</a>
+                <a href="#">Documentation</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact</a>
+            </div>
+            <p>&copy; 2026 AI Stock Analyzer. All rights reserved.</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">Disclaimer: Not financial advice. Always do your own research.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Live Activity Feed Animation
+        const activities = [
+            "Sarah from Austin just analyzed NVDA",
+            "Mike from NYC upgraded to Pro",
+            "James from Seattle analyzed AAPL",
+            "Emily from Boston analyzed TSLA",
+            "David from Chicago got a BUY signal",
+            "Lisa from Miami analyzed AMD",
+            "John from Denver upgraded to Pro",
+            "Rachel from Portland analyzed MSFT",
+            "Tom from Phoenix analyzed GOOGL",
+            "Anna from Dallas got a SELL signal"
+        ];
+
+        function addActivity() {
+            const feed = document.getElementById('activity-feed');
+            const randomActivity = activities[Math.floor(Math.random() * activities.length)];
+            const newItem = document.createElement('div');
+            newItem.className = 'activity-item';
+            newItem.textContent = randomActivity;
+            
+            // Add to top
+            feed.insertBefore(newItem, feed.firstChild);
+            
+            // Keep only 3 items
+            while (feed.children.length > 3) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        // Update activity every 3 seconds
+        setInterval(addActivity, 3000);
+
+        // Increment user count
+        let userCount = 12493;
+        setInterval(() => {
+            userCount += Math.floor(Math.random() * 3) + 1;
+            document.getElementById('user-count').textContent = userCount.toLocaleString();
+        }, 5000);
+
+        // Increment analysis count
+        let analysisCount = 50247;
+        setInterval(() => {
+            analysisCount += Math.floor(Math.random() * 5) + 1;
+            document.getElementById('analysis-count').textContent = analysisCount.toLocaleString();
+        }, 4000);
+
+        // Countdown Timer
+        let timeLeft = 23 * 3600 + 45 * 60 + 32; // 23:45:32 in seconds
+        
+        function updateCountdown() {
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            
+            document.getElementById('countdown').textContent = 
+                `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            timeLeft--;
+            
+            if (timeLeft < 0) {
+                timeLeft = 24 * 3600; // Reset to 24 hours
+            }
+        }
+        
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+</body>
+</html>
