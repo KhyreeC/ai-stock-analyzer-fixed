@@ -1,3 +1,4 @@
+HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -205,3 +206,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+.venv/
+.env
+config.js
+__pycache__/
+*.pyc
+.DS_Store
+524ec82 (Add secure payment system with Stripe integration)

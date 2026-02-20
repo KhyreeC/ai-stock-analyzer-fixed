@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import stripe
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
@@ -13,12 +15,16 @@ CORS(app, resources={
     }
 })
 
+# Load environment variables from .env file
+load_dotenv()
+
+
 # Stripe configuration
-stripe.api_key = 'sk_test_51LtyNEK3nmVF6uBR92XZS1MIjMSZGVoMm57whwOTZ7BUv3vZkepWhqVO4q8UmIUZVDpSb6OSXQup6VgtQLXyMMFb00mthoNrYg'
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 PRICE_IDS = {
-    'pro': 'price_1SzS0PK3nmVF6uBRY0yaKCcf',
-    'premium': 'price_1SzS04K3nmVF6uBRqCupe2z9'
+    'pro': os.getenv('PRO_PRICE_ID'),
+    'premium': os.getenv('PREMIUM_PRICE_ID'),
 }
 
 # In-memory customer storage
@@ -87,13 +93,18 @@ def health():
 
 
 if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5050))
     print("=" * 60)
     print("🚀 chart.py Payment Server")
     print("=" * 60)
-    print(f"📍 Server: http://localhost:5000")
+    print(f"📍 Server: http://localhost:{port}")
     print(f"✅ CORS: Enabled for all origins")
-    print(f"🔑 Stripe: {'TEST mode' if stripe.api_key.startswith('sk_test_') else 'LIVE mode'}")
+    if stripe.api_key:
+        mode = "TEST mode" if stripe.api_key.startswith("sk_test_") else "LIVE mode"
+    else:
+        mode = "NO KEY LOADED"
+    print(f"🔑 Stripe: {mode}")
     print("=" * 60)
-    print("\n💡 Test: curl http://localhost:5001/health\n")
-    
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    print(f"\n💡 Test: curl http://localhost:{port}/health\n")
+
+    app.run(host='0.0.0.0', port=port, debug=True)

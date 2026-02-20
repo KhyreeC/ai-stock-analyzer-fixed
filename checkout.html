@@ -6,6 +6,7 @@
     <title>Checkout - chart.py</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="config.js"></script>
     <style>
         * {
             margin: 0;
@@ -197,13 +198,6 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        .processing {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
     </style>
 </head>
 <body>
@@ -264,7 +258,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const plan = urlParams.get('plan') || 'pro';
 
-        // Plan configurations
+        // Plan configurations using config.js
         const plans = {
             free: {
                 name: 'Free Plan',
@@ -280,7 +274,7 @@
             pro: {
                 name: 'Pro Plan',
                 price: '$19.99',
-                priceId: 'price_1SzS0PK3nmVF6uBRY0yaKCcf', // Replace with your actual Stripe Price ID
+                priceId: STRIPE_CONFIG.proPriceId,
                 features: [
                     'Unlimited analyses',
                     'All technical indicators',
@@ -293,7 +287,7 @@
             premium: {
                 name: 'Premium Plan',
                 price: '$69.99',
-                priceId: 'price_1SzS04K3nmVF6uBRqCupe2z9', // Replace with your actual Stripe Price ID
+                priceId: STRIPE_CONFIG.premiumPriceId,
                 features: [
                     'Everything in Pro',
                     'AI predictions',
@@ -321,12 +315,11 @@
 
         // Free plan redirects to app
         if (plan === 'free') {
-            window.location.href = 'http://localhost:8501';
+            window.location.href = STRIPE_CONFIG.streamlitUrl;
         }
 
-        // Stripe setup
-        // IMPORTANT: Replace 'pk_test_...' with your actual Stripe Publishable Key
-        const stripe = Stripe('pk_test_51LtyNEK3nmVF6uBRACrWgWPX8sep1rpvbSjW6OM0rZsSBoNQD3zEOdicdgXqtSUwV9f3viunpZR63k5c1u29guNP00GBZ7e3rF'); // Replace this!
+        // Stripe setup using config.js
+        const stripe = Stripe(STRIPE_CONFIG.publishableKey);
         const elements = stripe.elements();
         
         const cardElement = elements.create('card', {
@@ -388,44 +381,41 @@
                 buttonText.textContent = 'Subscribe Now';
                 spinner.style.display = 'none';
             } else {
-                // Send to your server to create subscription
+                // Send to backend to create subscription
                 console.log('Payment Method created:', paymentMethod);
                 
+                try {
+                    const response = await fetch(STRIPE_CONFIG.backendUrl + '/create-subscription', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            paymentMethodId: paymentMethod.id,
+                            priceId: selectedPlan.priceId,
+                            email: email,
+                        }),
+                    });
 
-                
-                // PRODUCTION CODE - Uncomment and configure:
-             try{   
-                const response = await fetch('http://localhost:5001/create-subscription', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        paymentMethodId: paymentMethod.id,
-                        priceId: selectedPlan.priceId,
-                        email: email,
-                    }),
-                });
+                    const subscription = await response.json();
 
-                const subscription = await response.json();
-
-                if (subscription.error) {
-                    document.getElementById('card-errors').textContent = subscription.error;
-                    submitButton.disabled = false;
-                    buttonText.textContent = 'Subscribe Now';
-                    spinner.style.display = 'none';
-                } else {
-                    // Redirect to success page or app
-                    alert('✅ Payment successful! Welcome to chart.py ' + selectedPlan.name);
-                   window.location.href = 'http://localhost:8501?subscription=success&plan=' + plan;
-                }
-                   } catch (error) {
-                        console.error('Network error:', error);
-                        document.getElementById('card-errors').textContent = 'Connection error. Make sure backend is running.';
+                    if (subscription.error) {
+                        document.getElementById('card-errors').textContent = subscription.error;
                         submitButton.disabled = false;
                         buttonText.textContent = 'Subscribe Now';
                         spinner.style.display = 'none';
-    }
+                    } else {
+                        // Success! Redirect to app
+                        alert('✅ Payment successful! Welcome to chart.py ' + selectedPlan.name);
+                        window.location.href = STRIPE_CONFIG.streamlitUrl + '?subscription=success&plan=' + plan;
+                    }
+                } catch (error) {
+                    console.error('Network error:', error);
+                    document.getElementById('card-errors').textContent = 'Connection error. Make sure backend is running on ' + STRIPE_CONFIG.backendUrl;
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Subscribe Now';
+                    spinner.style.display = 'none';
+                }
             }
         });
     </script>
