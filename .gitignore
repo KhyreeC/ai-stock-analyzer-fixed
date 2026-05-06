@@ -1,8 +1,8 @@
 .venv/
-venv/
+
 .env
 config.js
 __pycache__/
 *.pyc
-*.pyo
+
 .DS_Store

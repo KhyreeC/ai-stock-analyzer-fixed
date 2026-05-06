@@ -139,18 +139,18 @@ if 'subscription_tier' not in st.session_state:
     # Check URL parameters for subscription info
     query_params = st.query_params
     if 'subscription' in query_params and query_params['subscription'] == 'success':
-        plan = query_params.get('plan', 'free')
+        plan = query_params.get('plan', 'starter')
         st.session_state.subscription_tier = plan
     else:
-        st.session_state.subscription_tier = 'free'
+        st.session_state.subscription_tier = 'starter'
 
 if 'user_email' not in st.session_state:
     st.session_state.user_email = None
 
 # Subscription tier limits
 TIER_LIMITS = {
-    'free': {
-        'daily_analyses': 5,
+    'starter': {
+        'daily_analyses': float('inf'),
         'charts': False,
         'alerts': False,
         'portfolio': False,
@@ -644,7 +644,7 @@ if not st.session_state.email_captured and st.session_state.free_analyses_used =
             st.rerun()
 
 # Upgrade prompt for free tier
-if tier == 'free' and st.session_state.free_analyses_used >= 3:
+if False:
     st.markdown("""
     <div class="upgrade-banner">
         ⚠️ You've used {}/{} free analyses today. Upgrade to Pro for unlimited analyses, charts, and more!
