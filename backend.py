@@ -23,6 +23,7 @@ load_dotenv()
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 PRICE_IDS = {
+    'starter': os.getenv('STARTER_PRICE_ID'),
     'pro': os.getenv('PRO_PRICE_ID'),
     'premium': os.getenv('PREMIUM_PRICE_ID'),
 }

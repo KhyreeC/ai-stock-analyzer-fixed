@@ -16,7 +16,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #306998 0%, #FFD43B 100%);
+            background: #333;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -260,12 +260,12 @@
 
         // Plan configurations using config.js
         const plans = {
-            free: {
-                name: 'Free Plan',
-                price: '$0',
-                priceId: null,
+            starter: {
+                name: 'Starter',
+                price: '$29.99',
+                priceId: STRIPE_CONFIG.starterPriceId,
                 features: [
-                    '5 analyses per day',
+                    'Unlimited analyses',
                     'Basic technical indicators',
                     'Price charts',
                     'Community support'
@@ -273,7 +273,7 @@
             },
             pro: {
                 name: 'Pro Plan',
-                price: '$19.99',
+                price: '$59.99',
                 priceId: STRIPE_CONFIG.proPriceId,
                 features: [
                     'Unlimited analyses',
@@ -286,7 +286,7 @@
             },
             premium: {
                 name: 'Premium Plan',
-                price: '$69.99',
+                price: '$89.99',
                 priceId: STRIPE_CONFIG.premiumPriceId,
                 features: [
                     'Everything in Pro',
